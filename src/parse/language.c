@@ -359,7 +359,7 @@ css_error handleStartAtRule(css_language *c, const parserutils_vector *vector)
 	const css_token *atkeyword = NULL;
 	int32_t ctx = 0;
 	bool match = false;
-	css_rule *rule;
+	css_rule *rule = NULL;
 	css_error error;
 
 	/* vector contains: ATKEYWORD ws any0 */
