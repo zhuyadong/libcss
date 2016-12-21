@@ -1361,6 +1361,9 @@ complete:
 	error = CSS_OK;
 
 cleanup:
+	/* XXX: if no parent, state.node_data is static mem, don't free it */
+  if (!parent)
+    state.node_data = NULL;
 	css_select__finalise_selection_state(&state);
 
 	return error;

@@ -45,6 +45,20 @@ static inline bool arena__compare_computed_page(
 	return memcmp(a, b, sizeof(struct css_computed_page)) == 0;
 }
 
+/* facebook yoga flexbox support */
+static inline bool arena__compare_computed_flexbox(
+	const struct css_computed_flexbox *a,
+	const struct css_computed_flexbox *b)
+{
+	if (a == NULL && b == NULL) {
+		return true;
+
+	} else if (a == NULL || b == NULL) {
+		return false;
+	}
+
+	return memcmp(a, b, sizeof(struct css_computed_flexbox)) == 0;
+}
 
 static inline bool arena__compare_computed_content_item(
 		const struct css_computed_content_item *a,
@@ -178,6 +192,13 @@ static inline bool css__arena_style_is_equal(
 	if (!arena__compare_computed_page(
 			a->page,
 			b->page)) {
+		return false;
+	}
+
+	/* facebook yoga flexbox support */
+	if (!arena__compare_computed_flexbox(
+		a->flexbox,
+		b->flexbox)) {
 		return false;
 	}
 
