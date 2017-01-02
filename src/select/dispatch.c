@@ -629,5 +629,25 @@ struct prop_table prop_dispatch[CSS_N_PROPERTIES] = {
 		PROPERTY_FUNCS(flex_basis),
 		0,
 		GROUP_FLEXBOX
-	}
+	},
+	{
+		PROPERTY_FUNCS(border_top_left_radius),
+		0,
+		GROUP_NORMAL
+	},
+	{
+		PROPERTY_FUNCS(border_top_right_radius),
+		0,
+		GROUP_NORMAL
+	},
+	{
+		PROPERTY_FUNCS(border_bottom_right_radius),
+		0,
+		GROUP_NORMAL
+	},
+	{
+		PROPERTY_FUNCS(border_bottom_left_radius),
+		0,
+		GROUP_NORMAL
+	},
 };

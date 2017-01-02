@@ -2558,4 +2558,148 @@ static inline css_error set_flex_basis(
 #undef FLEX_BASIS_SHIFT
 #undef FLEX_BASIS_INDEX
 
+/* css3 support */
+static const css_computed_border_radius default_border_radius = {
+	{
+    CSS_BORDER_RADIUS_SET,
+		CSS_BORDER_RADIUS_SET,
+		CSS_BORDER_RADIUS_SET,
+		CSS_BORDER_RADIUS_SET,
+	},
+	{0, 0, 0, 0}
+};
+#define ENSURE_RADIUS															  \
+	do {																			\
+		if (style->radius == NULL) {											   \
+			style->radius = malloc(sizeof(css_computed_border_radius));				  \
+			if (style->radius == NULL)											 \
+				return CSS_NOMEM;												   \
+																					\
+			memcpy(style->radius, &default_border_radius, sizeof(css_computed_border_radius)); \
+		}																		   \
+	} while (0)
+#define BORDER_TOP_LEFT_RADIUS_INDEX 0
+#define BORDER_TOP_LEFT_RADIUS_SHIFT 0
+#define BORDER_TOP_LEFT_RADIUS_MASK 0x1f
+static inline css_error set_border_top_left_radius(
+	css_computed_style *style, uint8_t type,
+	css_fixed length, css_unit unit)
+{
+	uint8_t *bits;
+
+	if (style->radius == NULL) {
+		if (type == CSS_BORDER_RADIUS_SET && length == 0) {
+			return CSS_OK;
+		}
+	}
+
+  ENSURE_RADIUS;
+
+	bits = &style->radius->bits[BORDER_TOP_LEFT_RADIUS_INDEX];
+
+	/* 5bits: uuuut : units | type */
+	*bits = (*bits & ~BORDER_TOP_LEFT_RADIUS_MASK) |
+					(((type & 0x1) | (unit << 1)) << BORDER_TOP_LEFT_RADIUS_SHIFT);
+
+	style->radius->radius[BORDER_TOP_LEFT_RADIUS_INDEX] = length;
+
+	return CSS_OK;
+}
+#undef BORDER_TOP_LEFT_RADIUS_MASK
+#undef BORDER_TOP_LEFT_RADIUS_SHIFT
+#undef BORDER_TOP_LEFT_RADIUS_INDEX
+
+#define BORDER_TOP_RIGHT_RADIUS_INDEX 1
+#define BORDER_TOP_RIGHT_RADIUS_SHIFT 0
+#define BORDER_TOP_RIGHT_RADIUS_MASK 0x1f
+static inline css_error set_border_top_right_radius(
+	css_computed_style *style, uint8_t type,
+	css_fixed length, css_unit unit)
+{
+	uint8_t *bits;
+
+	if (style->radius == NULL) {
+		if (type == CSS_BORDER_RADIUS_SET && length == 0) {
+			return CSS_OK;
+		}
+	}
+
+	ENSURE_RADIUS;
+
+	bits = &style->radius->bits[BORDER_TOP_RIGHT_RADIUS_INDEX];
+
+	/* 5bits: uuuut : units | type */
+	*bits = (*bits & ~BORDER_TOP_RIGHT_RADIUS_MASK) |
+					(((type & 0x1) | (unit << 1)) << BORDER_TOP_RIGHT_RADIUS_SHIFT);
+
+	style->radius->radius[BORDER_TOP_RIGHT_RADIUS_INDEX] = length;
+
+	return CSS_OK;
+}
+#undef BORDER_TOP_RIGHT_RADIUS_MASK
+#undef BORDER_TOP_RIGHT_RADIUS_SHIFT
+#undef BORDER_TOP_RIGHT_RADIUS_INDEX
+
+#define BORDER_BOTTOM_RIGHT_RADIUS_INDEX 2
+#define BORDER_BOTTOM_RIGHT_RADIUS_SHIFT 0
+#define BORDER_BOTTOM_RIGHT_RADIUS_MASK 0x1f
+static inline css_error set_border_bottom_right_radius(
+	css_computed_style *style, uint8_t type,
+	css_fixed length, css_unit unit)
+{
+	uint8_t *bits;
+
+	if (style->radius == NULL) {
+		if (type == CSS_BORDER_RADIUS_SET && length == 0) {
+			return CSS_OK;
+		}
+	}
+
+	ENSURE_RADIUS;
+
+	bits = &style->radius->bits[BORDER_BOTTOM_RIGHT_RADIUS_INDEX];
+
+	/* 5bits: uuuut : units | type */
+	*bits = (*bits & ~BORDER_BOTTOM_RIGHT_RADIUS_MASK) |
+					(((type & 0x1) | (unit << 1)) << BORDER_BOTTOM_RIGHT_RADIUS_SHIFT);
+
+	style->radius->radius[BORDER_BOTTOM_RIGHT_RADIUS_INDEX] = length;
+
+	return CSS_OK;
+}
+#undef BORDER_BOTTOM_RIGHT_RADIUS_MASK
+#undef BORDER_BOTTOM_RIGHT_RADIUS_SHIFT
+#undef BORDER_BOTTOM_RIGHT_RADIUS_INDEX
+
+#define BORDER_BOTTOM_LEFT_RADIUS_INDEX 3
+#define BORDER_BOTTOM_LEFT_RADIUS_SHIFT 0
+#define BORDER_BOTTOM_LEFT_RADIUS_MASK 0x1f
+static inline css_error set_border_bottom_left_radius(
+	css_computed_style *style, uint8_t type,
+	css_fixed length, css_unit unit)
+{
+	uint8_t *bits;
+
+	if (style->radius == NULL) {
+		if (type == CSS_BORDER_RADIUS_SET && length == 0) {
+			return CSS_OK;
+		}
+	}
+
+	ENSURE_RADIUS;
+
+	bits = &style->radius->bits[BORDER_BOTTOM_LEFT_RADIUS_INDEX];
+
+	/* 5bits: uuuut : units | type */
+	*bits = (*bits & ~BORDER_BOTTOM_LEFT_RADIUS_MASK) |
+					(((type & 0x1) | (unit << 1)) << BORDER_BOTTOM_LEFT_RADIUS_SHIFT);
+
+	style->radius->radius[BORDER_BOTTOM_LEFT_RADIUS_INDEX] = length;
+
+	return CSS_OK;
+}
+#undef BORDER_BOTTOM_LEFT_RADIUS_MASK
+#undef BORDER_BOTTOM_LEFT_RADIUS_SHIFT
+#undef BORDER_BOTTOM_LEFT_RADIUS_INDEX
+
 #endif

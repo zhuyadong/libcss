@@ -132,21 +132,37 @@ typedef struct css_computed_page {
 /* facebook css layout support  */
 
 typedef struct css_computed_flexbox {
-    /*
-     * Bit allocations:
-     *
-     *    76543210
-     *  1 0ibbbaaa	flex-grow | flex-wrap | flex-direction
-     *  2 0ibbbaaa	flex-shrink | align_content | justify-content
-     *  3 0ibbbaaa	flex-basis | align-self | align-items
-     */
-    uint8_t bits[3];
-    
-    int32_t flex_grow;
-    int32_t flex_shrink;
-    int32_t flex_basis;
+	/*
+	 * Bit allocations:
+	 *
+	 *    76543210
+	 *  1 0ibbbaaa	flex-grow | flex-wrap | flex-direction
+	 *  2 0ibbbaaa	flex-shrink | align_content | justify-content
+	 *  3 0ibbbaaa	flex-basis | align-self | align-items
+	 */
+	uint8_t bits[3];
+
+	int32_t flex_grow;
+	int32_t flex_shrink;
+	int32_t flex_basis;
 } css_computed_flexbox;
-       
+
+/* css3 support */
+typedef struct css_computed_border_radius {
+	/*
+	 * Bit allocations:
+	 *
+	 *    76543210
+	 *  1 000uuuut
+	 *  2 000uuuut
+	 *  3 000uuuut
+	 *  4 000uuuut
+	 */
+  uint8_t bits[4];
+
+  css_fixed radius[4];
+} css_computed_border_radius;
+
 struct css_computed_style_i {
 /*
  * background_attachment	  2
@@ -342,6 +358,8 @@ struct css_computed_style {
 	uint32_t count;
 	uint32_t bin;
 	css_computed_flexbox *flexbox; /* facebook css layout support  */
+	/* css3 support */
+	css_computed_border_radius *radius;
 };
 
 

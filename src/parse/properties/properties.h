@@ -451,5 +451,24 @@ css_error css__parse_flex(css_language *c,
 		const parserutils_vector *vector, int *ctx,
 		css_style *result);
 
+/* css3 support */
+css_error css__parse_border_radius(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_border_radius_corner(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result, enum css_properties_e op);
+css_error css__parse_border_top_left_radius(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_border_top_right_radius(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_border_bottom_right_radius(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
+css_error css__parse_border_bottom_left_radius(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		css_style *result);
 #endif
 

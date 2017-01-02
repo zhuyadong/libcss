@@ -60,6 +60,21 @@ static inline bool arena__compare_computed_flexbox(
 	return memcmp(a, b, sizeof(struct css_computed_flexbox)) == 0;
 }
 
+/* css3 support */
+static inline bool arena__compare_computed_border_radius(
+	const struct css_computed_border_radius *a,
+	const struct css_computed_border_radius *b)
+{
+	if (a == NULL && b == NULL) {
+		return true;
+
+	} else if (a == NULL || b == NULL) {
+		return false;
+	}
+
+	return memcmp(a, b, sizeof(struct css_computed_border_radius)) == 0;
+}
+
 static inline bool arena__compare_computed_content_item(
 		const struct css_computed_content_item *a,
 		const struct css_computed_content_item *b)
@@ -197,8 +212,15 @@ static inline bool css__arena_style_is_equal(
 
 	/* facebook yoga flexbox support */
 	if (!arena__compare_computed_flexbox(
-		a->flexbox,
-		b->flexbox)) {
+			a->flexbox,
+			b->flexbox)) {
+		return false;
+	}
+
+	/* css3 support */
+	if (!arena__compare_computed_border_radius(
+			a->radius,
+			b->radius)) {
 		return false;
 	}
 

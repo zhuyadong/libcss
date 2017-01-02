@@ -791,5 +791,9 @@ enum op_flex_basis {
 	FLEX_BASIS_AUTO     = 0x0000
 };
 
+/* css3 support */
+enum op_border_radius {
+	BORDER_RADIUS_SET   = 0x0080,
+};
 #endif
 

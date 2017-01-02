@@ -145,6 +145,13 @@ PROPERTY_FUNCS(flex_wrap);
 PROPERTY_FUNCS(flex_grow);
 PROPERTY_FUNCS(flex_shrink);
 PROPERTY_FUNCS(flex_basis);
+
+/* css3 support */
+PROPERTY_FUNCS(border_top_left_radius);
+PROPERTY_FUNCS(border_top_right_radius);
+PROPERTY_FUNCS(border_bottom_right_radius);
+PROPERTY_FUNCS(border_bottom_left_radius);
+
 #undef PROPERTY_FUNCS
 
 #endif

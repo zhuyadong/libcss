@@ -226,6 +226,13 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "flex-shrink", SLEN("flex-shrink") },
 	{ "flex-basis", SLEN("flex-basis") },
 	{ "flex", SLEN("flex") },
+	/* css3 support */
+	{ "border-radius", SLEN("border-radius") },
+	{ "border-top-left-radius", SLEN("border-top-left-radius") },
+	{ "border-top-right-radius", SLEN("border-top-right-radius") },
+	{ "border-bottom-right-radius", SLEN("border-bottom-right-radius") },
+	{ "border-bottom-left-radius", SLEN("border-bottom-left-radius") },
+
 	{ "row", SLEN("row") },
 	{ "row-reverse", SLEN("row-reverse") },
 	{ "column-reverse", SLEN("column-reverse") },

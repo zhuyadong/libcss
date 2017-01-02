@@ -138,7 +138,20 @@ enum css_properties_e {
 	CSS_PROP_FLEX_GROW              = 0x077,
 	CSS_PROP_FLEX_SHRINK            = 0x078,
 	CSS_PROP_FLEX_BASIS             = 0x079,
+
+	/* css3 support */
+	CSS_PROP_BORDER_TOP_LEFT_RADIUS     = 0x07a,
+	CSS_PROP_BORDER_TOP_RIGHT_RADIUS    = 0x07b,
+	CSS_PROP_BORDER_BOTTOM_RIGHT_RADIUS = 0x07c,
+	CSS_PROP_BORDER_BOTTOM_LEFT_RADIUS  = 0x07d,
+
 	CSS_N_PROPERTIES
+};
+
+/* css3 support */
+enum css_border_radius_e {
+	CSS_BORDER_RADIUS_INHERIT		= 0x0,
+	CSS_BORDER_RADIUS_SET				= 0x1,
 };
 
 /* facebook css layout support  */

@@ -2374,4 +2374,117 @@ static inline uint8_t get_flex_basis(
 #undef FLEX_BASIS_SHIFT
 #undef FLEX_BASIS_INDEX
 
+/* css3 support */
+#define BORDER_TOP_LEFT_RADIUS_INDEX 0
+#define BORDER_TOP_LEFT_RADIUS_SHIFT 0
+#define BORDER_TOP_LEFT_RADIUS_MASK 0x1f
+static inline uint8_t get_border_top_left_radius(
+	const css_computed_style *style,
+	css_fixed *length, css_unit *unit)
+{
+  if (style->radius != NULL) {
+    uint8_t bits = style->radius->bits[BORDER_TOP_LEFT_RADIUS_INDEX];
+		bits &= BORDER_TOP_LEFT_RADIUS_MASK;
+    if ((bits & 0x1) == CSS_BORDER_RADIUS_SET) {
+			*length = style->radius->radius[BORDER_TOP_LEFT_RADIUS_INDEX];
+		} else {
+			*length = 0;
+		}
+    *unit = bits >> 1;
+    return bits & 0x1;
+	}
+
+	*length = 0;
+	*unit = CSS_UNIT_PX;
+
+	return CSS_BORDER_RADIUS_SET;
+}
+#undef BORDER_TOP_LEFT_RADIUS_MASK
+#undef BORDER_TOP_LEFT_RADIUS_SHIFT
+#undef BORDER_TOP_LEFT_RADIUS_INDEX
+
+#define BORDER_TOP_RIGHT_RADIUS_INDEX 1
+#define BORDER_TOP_RIGHT_RADIUS_SHIFT 0
+#define BORDER_TOP_RIGHT_RADIUS_MASK 0x1f
+static inline uint8_t get_border_top_right_radius(
+	const css_computed_style *style,
+	css_fixed *length, css_unit *unit)
+{
+	if (style->radius != NULL) {
+		uint8_t bits = style->radius->bits[BORDER_TOP_RIGHT_RADIUS_INDEX];
+		bits &= BORDER_TOP_RIGHT_RADIUS_MASK;
+		if ((bits & 0x1) == CSS_BORDER_RADIUS_SET) {
+			*length = style->radius->radius[BORDER_TOP_RIGHT_RADIUS_INDEX];
+		} else {
+			*length = 0;
+		}
+		*unit = bits >> 1;
+		return bits & 0x1;
+	}
+
+	*length = 0;
+	*unit = CSS_UNIT_PX;
+
+	return CSS_BORDER_RADIUS_SET;
+}
+#undef BORDER_TOP_RIGHT_RADIUS_MASK
+#undef BORDER_TOP_RIGHT_RADIUS_SHIFT
+#undef BORDER_TOP_RIGHT_RADIUS_INDEX
+
+#define BORDER_BOTTOM_RIGHT_RADIUS_INDEX 2
+#define BORDER_BOTTOM_RIGHT_RADIUS_SHIFT 0
+#define BORDER_BOTTOM_RIGHT_RADIUS_MASK 0x1f
+static inline uint8_t get_border_bottom_right_radius(
+	const css_computed_style *style,
+	css_fixed *length, css_unit *unit)
+{
+	if (style->radius != NULL) {
+		uint8_t bits = style->radius->bits[BORDER_BOTTOM_RIGHT_RADIUS_INDEX];
+		bits &= BORDER_BOTTOM_RIGHT_RADIUS_MASK;
+		if ((bits & 0x1) == CSS_BORDER_RADIUS_SET) {
+			*length = style->radius->radius[BORDER_BOTTOM_RIGHT_RADIUS_INDEX];
+		} else {
+			*length = 0;
+		}
+		*unit = bits >> 1;
+		return bits & 0x1;
+	}
+
+	*length = 0;
+	*unit = CSS_UNIT_PX;
+
+	return CSS_BORDER_RADIUS_SET;
+}
+#undef BORDER_BOTTOM_RIGHT_RADIUS_MASK
+#undef BORDER_BOTTOM_RIGHT_RADIUS_SHIFT
+#undef BORDER_BOTTOM_RIGHT_RADIUS_INDEX
+
+#define BORDER_BOTTOM_LEFT_RADIUS_INDEX 3
+#define BORDER_BOTTOM_LEFT_RADIUS_SHIFT 0
+#define BORDER_BOTTOM_LEFT_RADIUS_MASK 0x1f
+static inline uint8_t get_border_bottom_left_radius(
+	const css_computed_style *style,
+	css_fixed *length, css_unit *unit)
+{
+	if (style->radius != NULL) {
+		uint8_t bits = style->radius->bits[BORDER_BOTTOM_LEFT_RADIUS_INDEX];
+		bits &= BORDER_BOTTOM_LEFT_RADIUS_MASK;
+		if ((bits & 0x1) == CSS_BORDER_RADIUS_SET) {
+			*length = style->radius->radius[BORDER_BOTTOM_LEFT_RADIUS_INDEX];
+		} else {
+			*length = 0;
+		}
+		*unit = bits >> 1;
+		return bits & 0x1;
+	}
+
+	*length = 0;
+	*unit = CSS_UNIT_PX;
+
+	return CSS_BORDER_RADIUS_SET;
+}
+#undef BORDER_BOTTOM_LEFT_RADIUS_MASK
+#undef BORDER_BOTTOM_LEFT_RADIUS_SHIFT
+#undef BORDER_BOTTOM_LEFT_RADIUS_INDEX
+
 #endif
