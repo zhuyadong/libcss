@@ -1,0 +1,9 @@
+[submodule "libcss"]
+	path = libcss
+	url = https://github.com/zhuyadong/libcss.git
+[submodule "libwapcaplet"]
+	path = libwapcaplet
+	url = https://github.com/zhuyadong/libwapcaplet.git
+[submodule "libparserutils"]
+	path = libparserutils
+	url = https://github.com/zhuyadong/libparserutils.git
