@@ -1816,6 +1816,9 @@ css_error set_initial(css_select_state *state,
 		case GROUP_AURAL:
 			if (state->computed->i.aural == NULL)
 				return CSS_OK;
+		case GROUP_FLEXBOX:
+			if (state->computed->flexbox == NULL)
+				return CSS_OK;
 			break;
 		}
 		error = prop_dispatch[prop].initial(state);

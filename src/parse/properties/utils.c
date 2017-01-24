@@ -1326,7 +1326,7 @@ css_error css__argument_list_to_style(css_language *c,
   int start_ctx, stop_ctx;
 	const css_token *token;
   css_token mktoken;
-  utf8_t mkbuf[256];
+  uint8_t mkbuf[256];
 	bool first = true;
 	css_error error = CSS_OK;
 
@@ -1339,6 +1339,7 @@ css_error css__argument_list_to_style(css_language *c,
 		*ctx = orig_ctx;
 		return CSS_INVALID;
 	}
+
 
   while (token != NULL) {
     if (token->type == CSS_TOKEN_STRING) {

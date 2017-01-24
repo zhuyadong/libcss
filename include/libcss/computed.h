@@ -83,13 +83,13 @@ typedef struct css_computed_color_stop {
   css_unit  tstop;
 } css_computed_color_stop;
 
-enum css_computed_gradient_type {
+typedef enum css_computed_gradient_type {
   CSS_COMPUTED_GRADIENT_NONE = 0,
   CSS_COMPUTED_GRADIENT_LINEAR = 1,
   CSS_COMPUTED_GRADIENT_RADIAL = 2
-};
+} css_computed_gradient_type;
 
-enum css_computed_radial_info {
+typedef enum css_computed_radial_info {
   CSS_COMPUTED_RADIAL_X_LEFT   = 0x1,
   CSS_COMPUTED_RADIAL_X_CENTER = 0x2,
   CSS_COMPUTED_RADIAL_X_RIGHT  = 0x4,
@@ -100,7 +100,7 @@ enum css_computed_radial_info {
   CSS_COMPUTED_RADIAL_CLOSEST_CORNER  = 0x80,
   CSS_COMPUTED_RADIAL_FARTHEST_SIDE   = 0x100,
   CSS_COMPUTED_RADIAL_FARTHEST_CORNER = 0x200
-};
+} css_computed_radial_info;
 
 typedef struct css_computed_linear_gradient {
   /* if side_or_conner is true, mean angle is
@@ -143,7 +143,7 @@ typedef struct css_computed_gradient {
 } css_computed_gradient;
 
 typedef struct css_computed_image {
-  css_computed_grdient gradient;
+  css_computed_gradient gradient;
 } css_computed_image;
 
 css_error css_computed_style_destroy(css_computed_style *style);
