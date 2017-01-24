@@ -441,6 +441,12 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "horizontal-tb", SLEN("horizontal-tb") },
 	{ "vertical-rl", SLEN("vertical-rl") },
 	{ "vertical-lr", SLEN("vertical-lr") },
+  /* css3 support */
+	{ "image", SLEN("image") },
+	{ "linear-gradient", SLEN("linear-gradient") },
+	{ "radial-gradient", SLEN("radial-gradient") },
+	{ "repeating-linear-gradient", SLEN("repeating-linear-gradient") },
+	{ "repeating-radial-gradient", SLEN("repeating-radial-gradient") },
 
 	{ "aliceblue", SLEN("aliceblue") },
 	{ "antiquewhite", SLEN("antiquewhite") },

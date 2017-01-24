@@ -1300,3 +1300,104 @@ cleanup:
 	return error;
 }
 
+/**
+ * Parse a comma separated argument list, converting to bytecode
+ *
+ * \param c          Parsing context
+ * \param vector     Vector of tokens to process
+ * \param ctx        Pointer to vector iteration context
+ * \param reserved   Callback to determine if an identifier is reserved
+ * \param get_value  Callback to retrieve bytecode value for a token
+ * \param style      Pointer to output style
+ * \return CSS_OK      on success,
+ *         CSS_INVALID if the input is invalid
+ *
+ * Post condition: \a *ctx is updated with the next token to process
+ *                 If the input is invalid, then \a *ctx remains unchanged.
+ */
+css_error css__argument_list_to_style(css_language *c,
+		const parserutils_vector *vector, int *ctx,
+		bool (*reserved)(css_language *c, const css_token *ident),
+		css_code_t (*get_value)(css_language *c, const css_token *token, bool first),
+		css_style *result)
+{
+	int orig_ctx = *ctx;
+	int prev_ctx = orig_ctx;
+  int start_ctx, stop_ctx;
+	const css_token *token;
+  css_token mktoken;
+  utf8_t mkbuf[256];
+	bool first = true;
+	css_error error = CSS_OK;
+
+  start_ctx = *ctx;
+  mktoken.data.data = mkbuf;
+  mktoken.data.len = 0;
+
+	token = parserutils_vector_iterate(vector, ctx);
+	if (token == NULL) {
+		*ctx = orig_ctx;
+		return CSS_INVALID;
+	}
+
+  while (token != NULL) {
+    if (token->type == CSS_TOKEN_STRING) {
+      css_code_t value = get_value(c, token, first);
+      uint32_t snumber;
+
+      error = css__stylesheet_string_add(c->sheet, 
+                                         lwc_string_ref(token->idata), &snumber);
+      if (error != CSS_OK)
+        goto cleanup;
+
+      error = css__stylesheet_style_append(result, value);
+      if (error != CSS_OK)
+        goto cleanup;
+
+      error = css__stylesheet_style_append(result, snumber);
+      if (error != CSS_OK)
+        goto cleanup;
+    } else if (token->type == CSS_TOKEN_IDENT) {
+      while (token != NULL && !tokenIsChar(token, ',')) {
+        stop_ctx = *ctx;
+        token = parserutils_vector_iterate(vector, ctx);
+      }
+      if (start_ctx != stop_ctx) {
+        *ctx = start_ctx;
+      }
+    } else {
+			error = CSS_INVALID;
+			goto cleanup;
+    }
+
+		consumeWhitespace(vector, ctx);
+
+		token = parserutils_vector_peek(vector, *ctx);
+		if (token != NULL && tokenIsChar(token, ',')) {
+			parserutils_vector_iterate(vector, ctx);
+
+			consumeWhitespace(vector, ctx);
+
+			token = parserutils_vector_peek(vector, *ctx);
+			if (token == NULL || (token->type != CSS_TOKEN_IDENT &&
+                            token->type != CSS_TOKEN_STRING)) {
+				error = CSS_INVALID;
+				goto cleanup;
+			}
+		} else {
+			break;
+		}
+
+		first = false;
+
+		prev_ctx = *ctx;
+    start_ctx = *ctx;
+		token = parserutils_vector_iterate(vector, ctx);
+  }
+
+ cleanup:
+	if (error != CSS_OK)
+		*ctx = orig_ctx;
+
+	return error;
+}

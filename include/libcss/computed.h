@@ -76,6 +76,76 @@ typedef struct css_computed_content_item {
 	} data;
 } css_computed_content_item;
 
+/* css3 support */
+typedef struct css_computed_color_stop {
+  css_color color;
+  css_fixed stop;
+  css_unit  tstop;
+} css_computed_color_stop;
+
+enum css_computed_gradient_type {
+  CSS_COMPUTED_GRADIENT_NONE = 0,
+  CSS_COMPUTED_GRADIENT_LINEAR = 1,
+  CSS_COMPUTED_GRADIENT_RADIAL = 2
+};
+
+enum css_computed_radial_info {
+  CSS_COMPUTED_RADIAL_X_LEFT   = 0x1,
+  CSS_COMPUTED_RADIAL_X_CENTER = 0x2,
+  CSS_COMPUTED_RADIAL_X_RIGHT  = 0x4,
+  CSS_COMPUTED_RADIAL_Y_LEFT   = 0x8,
+  CSS_COMPUTED_RADIAL_Y_CENTER = 0x10,
+  CSS_COMPUTED_RADIAL_Y_RIGHT  = 0x20,
+  CSS_COMPUTED_RADIAL_CLOSEST_SIDE    = 0x40,
+  CSS_COMPUTED_RADIAL_CLOSEST_CORNER  = 0x80,
+  CSS_COMPUTED_RADIAL_FARTHEST_SIDE   = 0x100,
+  CSS_COMPUTED_RADIAL_FARTHEST_CORNER = 0x200
+};
+
+typedef struct css_computed_linear_gradient {
+  /* if side_or_conner is true, mean angle is
+     from 'to left/top/right/bottom' keywords
+  */
+  bool side_or_conner;
+
+  css_fixed angle;
+  css_unit tangle;
+
+  uint8_t nstop;
+  css_computed_color_stop *stops;
+} css_computed_linear_gradient;
+
+typedef struct css_computed_radial_gradient {
+  css_computed_radial_info info;
+
+  css_fixed x;
+  css_fixed y;
+  css_fixed xradius;
+  css_fixed yradius;
+
+  css_unit tx;
+  css_unit ty;
+  css_unit txradius;
+  css_unit tyradius;
+
+  uint8_t nstop;
+  css_computed_color_stop *stops;
+} css_computed_radial_gradient;
+
+typedef struct css_computed_gradient {
+  css_computed_gradient_type type;
+  bool repeat;
+
+  union {
+    css_computed_linear_gradient linear;
+    css_computed_radial_gradient radial;
+  } data;
+} css_computed_gradient;
+
+typedef struct css_computed_image {
+  css_computed_grdient gradient;
+} css_computed_image;
+
 css_error css_computed_style_destroy(css_computed_style *style);
 
 css_error css_computed_style_compose(

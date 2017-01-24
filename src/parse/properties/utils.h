@@ -199,4 +199,12 @@ css_error css__comma_list_to_style(css_language *c,
 				bool first),
 		css_style *result);
 
+/* css3 support */
+css_error css__argument_list_to_style(css_language *c,
+                                      const parserutils_vector *vector, int *ctx,
+                                      bool (*reserved)(css_language *c, const css_token *ident),
+                                      css_code_t (*get_value)(css_language *c,
+                                                              const css_token *token, 
+                                                              bool first),
+                                      css_style *result);
 #endif

@@ -253,6 +253,12 @@ enum css_background_image_e {
 	/* Consult pointer in struct to determine which */
 	CSS_BACKGROUND_IMAGE_NONE		= 0x1,
 	CSS_BACKGROUND_IMAGE_IMAGE		= 0x1
+  /* css3 support */,
+  CSS_BACKGROUND_IMAGE_URL = 0x0,
+  CSS_BACKGROUND_IMAGE_LINEAR_GRADIENT = 0x1,
+  CSS_BACKGROUND_IMAGE_RADIAL_GRADIENT = 0x2,
+  CSS_BACKGROUND_IMAGE_REPEATING_LINEAR_GRADIENT = 0x3,
+  CSS_BACKGROUND_IMAGE_REPEATING_RADIAL_GRADIENT = 0x4
 };
 
 enum css_background_position_e {
