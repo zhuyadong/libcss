@@ -447,6 +447,7 @@ const stringmap_entry stringmap[LAST_KNOWN] = {
 	{ "radial-gradient", SLEN("radial-gradient") },
 	{ "repeating-linear-gradient", SLEN("repeating-linear-gradient") },
 	{ "repeating-radial-gradient", SLEN("repeating-radial-gradient") },
+	{ "to", SLEN("to") },
 
 	{ "aliceblue", SLEN("aliceblue") },
 	{ "antiquewhite", SLEN("antiquewhite") },

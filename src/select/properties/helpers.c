@@ -6,6 +6,7 @@
  */
 
 #include <assert.h>
+#include <libcss/computed.h>
 
 #include "bytecode/bytecode.h"
 #include "bytecode/opcodes.h"
@@ -531,3 +532,101 @@ css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 	return CSS_OK;
 }
 
+/* css3 support */
+css_error css__cascade_image(uint32_t opv, css_style *style,
+														 css_select_state *state,
+														 css_error (*fun)(css_computed_style *, uint8_t, css_computed_image *))
+{
+  css_computed_image *image = NULL;
+  css_error error = CSS_OK;
+	uint8_t type = CSS_BACKGROUND_IMAGE_INHERIT;
+
+	if (!css__outranks_existing(getOpcode(opv), isImportant(opv), state,
+                             isInherit(opv))) {
+    return CSS_OK;
+	}
+
+	if (isInherit(opv) == false) {
+		image = calloc(1, sizeof(css_computed_image));
+    uint16_t value = getValue(opv);
+		switch (value) {
+		case IMAGE_NONE:
+			image->type = CSS_COMPUTED_IMAGE_NONE;
+			break;
+		case IMAGE_URI:
+      image->type = CSS_COMPUTED_IMAGE_URI;
+			css__stylesheet_string_get(style->sheet, *((css_code_t *) style->bytecode), &image->data.uri);
+			advance_bytecode(style, sizeof(css_code_t));
+			break;
+    case IMAGE_LINEAR_GRADIENT:
+      image->type = CSS_COMPUTED_IMAGE_LINEAR_GRADIENT;
+      break;
+    case IMAGE_RADIAL_GRADIENT:
+      image->type = CSS_COMPUTED_IMAGE_RADIAL_GRADIENT;
+      break;
+    case IMAGE_REPEATING_LINEAR_GRADIENT:
+      image->type = CSS_COMPUTED_IMAGE_REPEATING_LINEAR_GRADIENT;
+      break;
+    case IMAGE_REPEATING_RADIAL_GRADIENT:
+      image->type = CSS_COMPUTED_IMAGE_REPEATING_RADIAL_GRADIENT;
+      break;
+		}
+
+    if (value == IMAGE_LINEAR_GRADIENT || value == IMAGE_REPEATING_LINEAR_GRADIENT) {
+      css_computed_linear_gradient *linear = calloc(1, sizeof(css_computed_linear_gradient));
+      int nstop = 0;
+      css_computed_color_stop stops[32];
+
+      if (linear == NULL) {
+        error = CSS_NOMEM;
+        goto invalid;
+			}
+
+			linear->angle = *((css_fixed *) style->bytecode);
+			advance_bytecode(style, sizeof(css_fixed));
+			linear->angleunit = *((uint32_t *) style->bytecode);
+			advance_bytecode(style, sizeof(uint32_t));
+      while (true) {
+        css_code_t opc = *style->bytecode;
+        advance_bytecode(style, sizeof(css_code_t));
+        if (getValue(opc) == COLOR_TRANSPARENT)
+          stops[nstop].color = 0;
+        else if (getValue(opc) == COLOR_CURRENT_COLOR) {
+
+        } else if (getValue(opc) == COLOR_SET) {
+          stops[nstop].color = *((uint32_t*) style->bytecode);
+          advance_bytecode(style, sizeof(uint32_t));
+        }
+        stops[nstop].stop = *((css_fixed *) style->bytecode);
+        advance_bytecode(style, sizeof(css_fixed));
+        stops[nstop].stopunit = *((uint32_t *) style->bytecode);
+        advance_bytecode(style, sizeof(uint32_t));
+        ++nstop;
+        if (*style->bytecode == 0) {
+          advance_bytecode(style, sizeof(css_code_t));
+          break;
+        }
+				if (nstop >= 32)
+					goto invalid;
+      }
+      linear->nstop = nstop;
+      linear->stops = calloc(nstop, sizeof(css_computed_color_stop));
+			if (!linear->stops) {
+				free(linear);
+				error = CSS_NOMEM;
+				goto invalid;
+			}
+      memcpy(linear->stops, stops, nstop * sizeof(css_computed_color_stop));
+			image->data.linear = linear;
+    } else  if (value == IMAGE_RADIAL_GRADIENT || value == IMAGE_REPEATING_RADIAL_GRADIENT) {
+    }
+
+		type = image ? CSS_BACKGROUND_IMAGE_IMAGE
+								 : CSS_BACKGROUND_IMAGE_NONE;
+	}
+
+  return fun(state->computed, type, image);
+invalid:
+  css__computed_image_destroy(image);
+  return error;
+}

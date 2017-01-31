@@ -898,23 +898,34 @@ static inline css_error set_border_left_width(
 #define BACKGROUND_IMAGE_MASK  0x1
 static inline css_error set_background_image(
 		css_computed_style *style, uint8_t type,
-		lwc_string *url)
+		css_computed_image *image)
 {
 	uint8_t *bits = &style->i.bits[BACKGROUND_IMAGE_INDEX];
-	lwc_string *oldurl = style->i.background_image;
+	css_computed_image *oldimg = style->i.background_image;
 
 	/* 1bit: type */
 	*bits = (*bits & ~BACKGROUND_IMAGE_MASK) |
 			((type & 0x1) << BACKGROUND_IMAGE_SHIFT);
 
-	if (url != NULL) {
-                style->i.background_image = lwc_string_ref(url);
-	} else {
-		style->i.background_image = NULL;
-	}
+	style->i.background_image = image;
 
-	if (oldurl != NULL)
-		lwc_string_unref(oldurl);
+  /* clear old image */
+  if (oldimg) {
+    if (oldimg->data.uri) {
+			if (oldimg->type == CSS_COMPUTED_IMAGE_LINEAR_GRADIENT ||
+					oldimg->type == CSS_COMPUTED_IMAGE_REPEATING_LINEAR_GRADIENT) {
+				if (oldimg->data.linear->nstop)
+					free(oldimg->data.linear->stops);
+				free(oldimg->data.linear);
+			} else if (oldimg->type == CSS_COMPUTED_IMAGE_RADIAL_GRADIENT ||
+								 oldimg->type == CSS_COMPUTED_IMAGE_REPEATING_RADIAL_GRADIENT) {
+
+			} else if (oldimg->type == CSS_COMPUTED_IMAGE_URI) {
+				lwc_string_unref(oldimg->data.uri);
+			}
+		}
+    free(oldimg);
+	}
 
 	return CSS_OK;
 }

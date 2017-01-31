@@ -302,7 +302,7 @@ struct css_computed_style_i {
 	uint8_t unused[1];
 
 	css_color background_color;
-	lwc_string *background_image;
+	css_computed_image *background_image;
 	css_fixed background_position[2];
 
 	css_color border_color[4];
@@ -396,5 +396,8 @@ css_error css__compute_absolute_values(const css_computed_style *parent,
 		css_error (*compute_font_size)(void *pw, 
 			const css_hint *parent, css_hint *size),
 		void *pw);
+
+/* css3 support */
+css_error css__computed_image_destroy(css_computed_image *image);
 
 #endif

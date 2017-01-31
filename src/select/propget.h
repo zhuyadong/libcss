@@ -782,14 +782,14 @@ static inline uint8_t get_border_left_width(
 #define BACKGROUND_IMAGE_MASK  0x1
 static inline uint8_t get_background_image(
 		const css_computed_style *style,
-		lwc_string **url)
+		css_computed_image **image)
 {
 	uint8_t bits = style->i.bits[BACKGROUND_IMAGE_INDEX];
 	bits &= BACKGROUND_IMAGE_MASK;
 	bits >>= BACKGROUND_IMAGE_SHIFT;
 
 	/* 1bit: type */
-	*url = style->i.background_image;
+	*image = style->i.background_image;
 
 	return bits;
 }

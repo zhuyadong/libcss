@@ -19,6 +19,15 @@ static inline bool is_css_inherit(css_language *c, const css_token *token)
 			&match) == lwc_error_ok && match));
 }
 
+static inline bool is_css_keyword(css_language *c, const css_token *token, int keyword) 
+{
+	bool match;
+	return ((token->type == CSS_TOKEN_IDENT || token->type == CSS_TOKEN_FUNCTION) &&
+          (lwc_string_caseless_isequal(
+                                       token->idata, c->strings[keyword],
+                                       &match) == lwc_error_ok && match));
+}
+
 enum border_side_e { BORDER_SIDE_TOP = 0, BORDER_SIDE_RIGHT = 1, BORDER_SIDE_BOTTOM = 2, BORDER_SIDE_LEFT = 3 };
 
 /**
@@ -200,11 +209,11 @@ css_error css__comma_list_to_style(css_language *c,
 		css_style *result);
 
 /* css3 support */
-css_error css__argument_list_to_style(css_language *c,
-                                      const parserutils_vector *vector, int *ctx,
-                                      bool (*reserved)(css_language *c, const css_token *ident),
-                                      css_code_t (*get_value)(css_language *c,
-                                                              const css_token *token, 
-                                                              bool first),
-                                      css_style *result);
+css_error css__parse_linear_gradient(css_language *c,
+                                     const parserutils_vector *vector, int *ctx,
+                                     css_style *result);
+
+css_error css__parse_radial_gradient(css_language *c,
+                                     const parserutils_vector *vector, int *ctx,
+                                     css_style *result);
 #endif

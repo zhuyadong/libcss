@@ -1300,105 +1300,171 @@ cleanup:
 	return error;
 }
 
+/* css3 support */
+css_error css__parse_color_stops(css_language* c,
+                                 const parserutils_vector* vector,
+                                 int *ctx, css_style* result)
+{
+	int orig_ctx = *ctx;
+	const css_token *token;
+	css_error error = CSS_OK;
+  struct {
+    uint16_t  value;
+    uint32_t  color;
+    css_fixed stop;
+    uint32_t  stopunit;
+  } colorstops[32];
+  int nstop = 0;
+
+  while (true) {
+    consumeWhitespace(vector, ctx);
+    token = parserutils_vector_iterate(vector, ctx);
+    if (token == NULL)
+      goto invalid;
+    if (tokenIsChar(token, ')'))
+			break;
+		else if (tokenIsChar(token, ',')) {
+			consumeWhitespace(vector, ctx);
+			token = parserutils_vector_peek(vector, *ctx);
+			if (token == NULL) {
+				error = CSS_INVALID;
+        goto invalid;
+      }
+		}
+    /* color */
+    error = css__parse_colour_specifier(c, vector, ctx, &colorstops[nstop].value, &colorstops[nstop].color);
+    if (error != CSS_OK)
+      goto invalid;
+
+    /* percentage? */
+    consumeWhitespace(vector, ctx);
+    token = parserutils_vector_peek(vector, *ctx);
+    if (token == NULL) {
+      error = CSS_INVALID;
+      goto invalid;
+    }
+
+    if (token->type == CSS_TOKEN_PERCENTAGE || token->type == CSS_TOKEN_DIMENSION) {
+      error = css__parse_unit_specifier(c, vector, ctx, UNIT_PCT, &colorstops[nstop].stop, &colorstops[nstop].stopunit);
+      if (error != CSS_OK)
+        goto invalid;
+    } else {
+      colorstops[nstop].stop = 0;
+      colorstops[nstop].stopunit = UNIT_PCT;
+    }
+    ++nstop;
+  }
+  if (nstop < 2 || nstop > 32)
+    goto invalid;
+
+  /* gen opcode */
+  {
+    int i;
+    for (i = 0; i < nstop; ++i) {
+      error = css__stylesheet_style_appendOPV(result, CSS_PROP_COLOR, 0, colorstops[i].value);
+      if (error != CSS_OK)
+        goto invalid;
+
+      if (colorstops[i].value == COLOR_SET) {
+        error = css__stylesheet_style_append(result, colorstops[i].color);
+        if (error != CSS_OK)
+          goto invalid;
+      }
+
+      error = css__stylesheet_style_vappend(result, 2, colorstops[i].stop, colorstops[i].stopunit);
+      if (error != CSS_OK)
+        goto invalid;
+    }
+
+    /* zero value end the colorstop list */
+    error = css__stylesheet_style_append(result, 0);
+    if (error != CSS_OK)
+      goto invalid;
+  }
+
+  return CSS_OK;
+
+invalid:
+  *ctx = orig_ctx;
+  return error;
+}
+
 /**
- * Parse a comma separated argument list, converting to bytecode
+ * Parse a linear-gradiant specifier
  *
- * \param c          Parsing context
- * \param vector     Vector of tokens to process
- * \param ctx        Pointer to vector iteration context
- * \param reserved   Callback to determine if an identifier is reserved
- * \param get_value  Callback to retrieve bytecode value for a token
- * \param style      Pointer to output style
+ * \param c       Parsing context
+ * \param vector  Vector of tokens to process
+ * \param ctx     Pointer to vector iteration context
+ * \param result  Pointer to location to receive result
  * \return CSS_OK      on success,
  *         CSS_INVALID if the input is invalid
  *
  * Post condition: \a *ctx is updated with the next token to process
  *                 If the input is invalid, then \a *ctx remains unchanged.
  */
-css_error css__argument_list_to_style(css_language *c,
-		const parserutils_vector *vector, int *ctx,
-		bool (*reserved)(css_language *c, const css_token *ident),
-		css_code_t (*get_value)(css_language *c, const css_token *token, bool first),
-		css_style *result)
+css_error css__parse_linear_gradient(css_language* c,
+                                     const parserutils_vector* vector,
+                                     int *ctx, css_style* result)
 {
 	int orig_ctx = *ctx;
-	int prev_ctx = orig_ctx;
-  int start_ctx, stop_ctx;
 	const css_token *token;
-  css_token mktoken;
-  uint8_t mkbuf[256];
-	bool first = true;
 	css_error error = CSS_OK;
+  css_fixed angle;
+  uint32_t tangle = UNIT_DEG;
 
-  start_ctx = *ctx;
-  mktoken.data.data = mkbuf;
-  mktoken.data.len = 0;
-
-	token = parserutils_vector_iterate(vector, ctx);
-	if (token == NULL) {
-		*ctx = orig_ctx;
-		return CSS_INVALID;
-	}
-
-
-  while (token != NULL) {
-    if (token->type == CSS_TOKEN_STRING) {
-      css_code_t value = get_value(c, token, first);
-      uint32_t snumber;
-
-      error = css__stylesheet_string_add(c->sheet, 
-                                         lwc_string_ref(token->idata), &snumber);
-      if (error != CSS_OK)
-        goto cleanup;
-
-      error = css__stylesheet_style_append(result, value);
-      if (error != CSS_OK)
-        goto cleanup;
-
-      error = css__stylesheet_style_append(result, snumber);
-      if (error != CSS_OK)
-        goto cleanup;
-    } else if (token->type == CSS_TOKEN_IDENT) {
-      while (token != NULL && !tokenIsChar(token, ',')) {
-        stop_ctx = *ctx;
-        token = parserutils_vector_iterate(vector, ctx);
-      }
-      if (start_ctx != stop_ctx) {
-        *ctx = start_ctx;
-      }
-    } else {
-			error = CSS_INVALID;
-			goto cleanup;
+  /* <linear-gradient()> = linear-gradient( [ <angle> | to <side-or-corner> ]? , <color-stop-list> ) */
+  token = parserutils_vector_iterate(vector, ctx);
+  if (token->type == CSS_TOKEN_DIMENSION) {
+    *ctx = orig_ctx;
+    error = css__parse_unit_specifier(c, vector, ctx, CSS_UNIT_DEG, &angle, &tangle);
+    if (error != CSS_OK || (tangle != UNIT_DEG && tangle != UNIT_RAD && tangle != UNIT_GRAD)) {
+      error = CSS_INVALID;
+      goto invalid;
     }
-
-		consumeWhitespace(vector, ctx);
-
-		token = parserutils_vector_peek(vector, *ctx);
-		if (token != NULL && tokenIsChar(token, ',')) {
-			parserutils_vector_iterate(vector, ctx);
-
-			consumeWhitespace(vector, ctx);
-
-			token = parserutils_vector_peek(vector, *ctx);
-			if (token == NULL || (token->type != CSS_TOKEN_IDENT &&
-                            token->type != CSS_TOKEN_STRING)) {
-				error = CSS_INVALID;
-				goto cleanup;
-			}
-		} else {
-			break;
-		}
-
-		first = false;
-
-		prev_ctx = *ctx;
-    start_ctx = *ctx;
-		token = parserutils_vector_iterate(vector, ctx);
+  } else if (token->type == CSS_TOKEN_IDENT && is_css_keyword(c, token, TO)) {
+    consumeWhitespace(vector, ctx);
+    token = parserutils_vector_iterate(vector, ctx);
+    if (token->type != CSS_TOKEN_IDENT) {
+      error = CSS_INVALID;
+      goto invalid;
+    }
+    if (is_css_keyword(c, token, LEFT)) {
+      angle = INTTOFIX(270);
+    } else if (is_css_keyword(c, token, RIGHT)) {
+      angle = INTTOFIX(90);
+    } else if (is_css_keyword(c, token, TOP)) {
+      angle = INTTOFIX(0);
+    } else if (is_css_keyword(c, token, BOTTOM)) {
+      angle = INTTOFIX(180);
+    } else {
+      error = CSS_INVALID;
+      goto invalid;
+    }
+  } else if (token->type == CSS_TOKEN_NUMBER) {
+    size_t consumed = 0;
+    angle = css__number_from_lwc_string(token->idata, true, &consumed);
+    if (FIXTOINT(angle) != 0) {
+      error = CSS_INVALID;
+      goto invalid;
+    }
+  } else {
+    /* no angle argument, default 180deg */
+    angle = INTTOFIX(180);
   }
 
- cleanup:
-	if (error != CSS_OK)
-		*ctx = orig_ctx;
+  /* gen opcode */
+  error = css__stylesheet_style_vappend(result, 2, angle, tangle);
+  if (error != CSS_OK)
+    goto invalid;
 
-	return error;
+  /* <color-stop-list> */
+  error = css__parse_color_stops(c, vector, ctx, result);
+  if (error != CSS_OK)
+    goto invalid;
+
+  return CSS_OK;
+invalid:
+  *ctx = orig_ctx;
+  return error;
 }
+

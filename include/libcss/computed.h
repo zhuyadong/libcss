@@ -80,14 +80,17 @@ typedef struct css_computed_content_item {
 typedef struct css_computed_color_stop {
   css_color color;
   css_fixed stop;
-  css_unit  tstop;
+  css_unit  stopunit;
 } css_computed_color_stop;
 
-typedef enum css_computed_gradient_type {
-  CSS_COMPUTED_GRADIENT_NONE = 0,
-  CSS_COMPUTED_GRADIENT_LINEAR = 1,
-  CSS_COMPUTED_GRADIENT_RADIAL = 2
-} css_computed_gradient_type;
+typedef enum css_computed_image_type {
+  CSS_COMPUTED_IMAGE_NONE = 0,
+  CSS_COMPUTED_IMAGE_URI = 1,
+  CSS_COMPUTED_IMAGE_LINEAR_GRADIENT = 2,
+  CSS_COMPUTED_IMAGE_REPEATING_LINEAR_GRADIENT = 3,
+  CSS_COMPUTED_IMAGE_RADIAL_GRADIENT = 4,
+  CSS_COMPUTED_IMAGE_REPEATING_RADIAL_GRADIENT = 5
+} css_computed_image_type;
 
 typedef enum css_computed_radial_info {
   CSS_COMPUTED_RADIAL_X_LEFT   = 0x1,
@@ -103,47 +106,37 @@ typedef enum css_computed_radial_info {
 } css_computed_radial_info;
 
 typedef struct css_computed_linear_gradient {
-  /* if side_or_conner is true, mean angle is
-     from 'to left/top/right/bottom' keywords
-  */
-  bool side_or_conner;
-
   css_fixed angle;
-  css_unit tangle;
+  css_unit  angleunit;
 
   uint8_t nstop;
   css_computed_color_stop *stops;
 } css_computed_linear_gradient;
 
 typedef struct css_computed_radial_gradient {
-  css_computed_radial_info info;
+  uint8_t info;
 
   css_fixed x;
   css_fixed y;
   css_fixed xradius;
   css_fixed yradius;
 
-  css_unit tx;
-  css_unit ty;
-  css_unit txradius;
-  css_unit tyradius;
+  css_unit xunit;
+  css_unit yunit;
+  css_unit xradiusunit;
+  css_unit yradiusunit;
 
   uint8_t nstop;
   css_computed_color_stop *stops;
 } css_computed_radial_gradient;
 
-typedef struct css_computed_gradient {
-  css_computed_gradient_type type;
-  bool repeat;
-
-  union {
-    css_computed_linear_gradient linear;
-    css_computed_radial_gradient radial;
-  } data;
-} css_computed_gradient;
-
 typedef struct css_computed_image {
-  css_computed_gradient gradient;
+  uint8_t type;
+  union {
+    lwc_string *uri;
+    css_computed_linear_gradient *linear;
+    css_computed_radial_gradient *radial;
+  } data;
 } css_computed_image;
 
 css_error css_computed_style_destroy(css_computed_style *style);
@@ -227,7 +220,7 @@ uint8_t css_computed_border_left_width(
 
 uint8_t css_computed_background_image(
 		const css_computed_style *style,
-		lwc_string **url);
+		css_computed_image **image);
 
 uint8_t css_computed_color(
 		const css_computed_style *style,

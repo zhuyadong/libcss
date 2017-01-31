@@ -6,6 +6,7 @@
  */
 
 #include <string.h>
+#include <libcss/computed.h>
 
 #include "select/arena.h"
 #include "select/computed.h"
@@ -224,7 +225,7 @@ css_error css_computed_style_destroy(css_computed_style *style)
 		lwc_string_unref(style->i.list_style_image);
 
 	if (style->i.background_image != NULL)
-		lwc_string_unref(style->i.background_image);
+		css__computed_image_destroy(style->i.background_image);
 
 	free(style);
 
@@ -458,9 +459,9 @@ uint8_t css_computed_border_left_width(const css_computed_style *style,
 }
 
 uint8_t css_computed_background_image(const css_computed_style *style,
-		lwc_string **url)
+		css_computed_image **image)
 {
-	return get_background_image(style, url);
+	return get_background_image(style, image);
 }
 
 uint8_t css_computed_color(const css_computed_style *style,
@@ -1805,4 +1806,21 @@ uint8_t css_computed_border_bottom_left_radius(const css_computed_style *style,
 																								css_fixed *length, css_unit *unit)
 {
 	return get_border_bottom_left_radius(style, length, unit);
+}
+
+css_error css__computed_image_destroy(css_computed_image *image)
+{
+  if (image) {
+		if (image->data.uri) {
+			if (image->type == CSS_COMPUTED_IMAGE_LINEAR_GRADIENT ||
+					image->type == CSS_COMPUTED_IMAGE_REPEATING_LINEAR_GRADIENT) {
+				if (image->data.linear->stops)
+					free(image->data.linear->stops);
+        free(image->data.linear);
+			}
+		}
+		free(image);
+	}
+
+	return CSS_OK;
 }

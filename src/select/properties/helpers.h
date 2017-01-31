@@ -58,5 +58,9 @@ css_error css__cascade_counter_increment_reset(uint32_t opv, css_style *style,
 		css_select_state *state,
 		css_error (*fun)(css_computed_style *, uint8_t,
 				css_computed_counter *));
+/* css3 support */
+css_error css__cascade_image(uint32_t opv, css_style *style,
+		css_select_state *state,
+		css_error (*fun)(css_computed_style *, uint8_t, css_computed_image *));
 
 #endif
