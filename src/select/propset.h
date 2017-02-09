@@ -901,13 +901,13 @@ static inline css_error set_background_image(
 		css_computed_image *image)
 {
 	uint8_t *bits = &style->i.bits[BACKGROUND_IMAGE_INDEX];
-	css_computed_image *oldimg = style->i.background_image;
+	css_computed_image *oldimg = style->background_image;
 
 	/* 1bit: type */
 	*bits = (*bits & ~BACKGROUND_IMAGE_MASK) |
 			((type & 0x1) << BACKGROUND_IMAGE_SHIFT);
 
-	style->i.background_image = image;
+	style->background_image = image;
 
   /* clear old image */
   if (oldimg) {

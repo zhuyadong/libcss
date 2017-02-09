@@ -224,8 +224,12 @@ css_error css_computed_style_destroy(css_computed_style *style)
 	if (style->i.list_style_image != NULL)
 		lwc_string_unref(style->i.list_style_image);
 
-	if (style->i.background_image != NULL)
-		css__computed_image_destroy(style->i.background_image);
+  /* css3 support */
+	if (style->background_image != NULL)
+		css__computed_image_destroy(style->background_image);
+
+  if (style->radius != NULL)
+		free(style->radius);
 
 	free(style);
 

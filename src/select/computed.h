@@ -302,7 +302,6 @@ struct css_computed_style_i {
 	uint8_t unused[1];
 
 	css_color background_color;
-	css_computed_image *background_image;
 	css_fixed background_position[2];
 
 	css_color border_color[4];
@@ -360,6 +359,7 @@ struct css_computed_style {
 	css_computed_flexbox *flexbox; /* facebook css layout support  */
 	/* css3 support */
 	css_computed_border_radius *radius;
+	css_computed_image *background_image;
 };
 
 

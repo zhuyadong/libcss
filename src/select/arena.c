@@ -7,6 +7,7 @@
  */
 
 #include <string.h>
+#include <libcss/computed.h>
 
 #include "select/arena.h"
 #include "select/arena_hash.h"
@@ -73,6 +74,33 @@ static inline bool arena__compare_computed_border_radius(
 	}
 
 	return memcmp(a, b, sizeof(struct css_computed_border_radius)) == 0;
+}
+
+static inline bool arena__compare_computed_image(
+	const struct css_computed_image *a,
+	const struct css_computed_image *b)
+{
+	if (a == NULL && b == NULL) {
+		return true;
+
+	} else if (a == NULL || b == NULL) {
+		return false;
+	} else if (a->type != b->type) {
+		return false;
+	} else {
+    if (a->type == CSS_COMPUTED_IMAGE_URI)
+			return a->data.uri == b->data.uri;
+		else if (a->type == CSS_COMPUTED_IMAGE_LINEAR_GRADIENT) {
+			if (a->data.linear->angle != b->data.linear->angle ||
+					a->data.linear->angleunit != b->data.linear->angleunit ||
+					a->data.linear->nstop != b->data.linear->nstop)
+				return false;
+			return memcmp(a->data.linear->stops, b->data.linear->stops,
+										a->data.linear->nstop * sizeof(css_computed_color_stop)) == 0;
+		}
+	}
+
+	return false;
 }
 
 static inline bool arena__compare_computed_content_item(
@@ -221,6 +249,12 @@ static inline bool css__arena_style_is_equal(
 	if (!arena__compare_computed_border_radius(
 			a->radius,
 			b->radius)) {
+		return false;
+	}
+
+  if (!arena__compare_computed_image(
+			a->background_image,
+			b->background_image)) {
 		return false;
 	}
 

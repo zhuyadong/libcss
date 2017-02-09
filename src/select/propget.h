@@ -789,7 +789,7 @@ static inline uint8_t get_background_image(
 	bits >>= BACKGROUND_IMAGE_SHIFT;
 
 	/* 1bit: type */
-	*image = style->i.background_image;
+	*image = style->background_image;
 
 	return bits;
 }

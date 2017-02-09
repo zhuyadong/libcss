@@ -45,13 +45,13 @@ css_error css__compose_background_image(const css_computed_style *parent,
 	css_computed_image *image = NULL;
 	uint8_t type = get_background_image(child, &image);
 
-	if ((child->i.background_image == NULL && parent->i.background_image != NULL) ||
+	if ((child->background_image == NULL && parent->background_image != NULL) ||
 			type == CSS_BACKGROUND_IMAGE_INHERIT ||
-			(child->i.background_image != NULL && result != child))
+			(child->background_image != NULL && result != child))
 	{
 		css_computed_image *copy = NULL;
 
-		if ((child->i.background_image == NULL && parent->i.background_image != NULL) ||
+		if ((child->background_image == NULL && parent->background_image != NULL) ||
 				type == CSS_BACKGROUND_IMAGE_INHERIT)
 		{
 			type = get_background_image(parent, &image);

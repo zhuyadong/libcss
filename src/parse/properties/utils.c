@@ -1317,6 +1317,7 @@ css_error css__parse_color_stops(css_language* c,
   int nstop = 0;
 
   while (true) {
+    int prev_ctx = *ctx;
     consumeWhitespace(vector, ctx);
     token = parserutils_vector_iterate(vector, ctx);
     if (token == NULL)
@@ -1330,6 +1331,8 @@ css_error css__parse_color_stops(css_language* c,
 				error = CSS_INVALID;
         goto invalid;
       }
+		} else if (prev_ctx == orig_ctx) {
+			*ctx = orig_ctx;
 		}
     /* color */
     error = css__parse_colour_specifier(c, vector, ctx, &colorstops[nstop].value, &colorstops[nstop].color);
@@ -1416,7 +1419,7 @@ css_error css__parse_linear_gradient(css_language* c,
   token = parserutils_vector_iterate(vector, ctx);
   if (token->type == CSS_TOKEN_DIMENSION) {
     *ctx = orig_ctx;
-    error = css__parse_unit_specifier(c, vector, ctx, CSS_UNIT_DEG, &angle, &tangle);
+    error = css__parse_unit_specifier(c, vector, ctx, UNIT_DEG, &angle, &tangle);
     if (error != CSS_OK || (tangle != UNIT_DEG && tangle != UNIT_RAD && tangle != UNIT_GRAD)) {
       error = CSS_INVALID;
       goto invalid;
@@ -1450,6 +1453,7 @@ css_error css__parse_linear_gradient(css_language* c,
   } else {
     /* no angle argument, default 180deg */
     angle = INTTOFIX(180);
+    *ctx = orig_ctx;
   }
 
   /* gen opcode */

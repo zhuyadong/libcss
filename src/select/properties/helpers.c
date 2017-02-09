@@ -584,7 +584,7 @@ css_error css__cascade_image(uint32_t opv, css_style *style,
 
 			linear->angle = *((css_fixed *) style->bytecode);
 			advance_bytecode(style, sizeof(css_fixed));
-			linear->angleunit = *((uint32_t *) style->bytecode);
+			linear->angleunit = css__to_css_unit(*((uint32_t *) style->bytecode));
 			advance_bytecode(style, sizeof(uint32_t));
       while (true) {
         css_code_t opc = *style->bytecode;
@@ -599,7 +599,7 @@ css_error css__cascade_image(uint32_t opv, css_style *style,
         }
         stops[nstop].stop = *((css_fixed *) style->bytecode);
         advance_bytecode(style, sizeof(css_fixed));
-        stops[nstop].stopunit = *((uint32_t *) style->bytecode);
+        stops[nstop].stopunit = css__to_css_unit(*((uint32_t *) style->bytecode));
         advance_bytecode(style, sizeof(uint32_t));
         ++nstop;
         if (*style->bytecode == 0) {
