@@ -289,12 +289,12 @@ css_error css__computed_style_initialise(css_computed_style *style,
  * \pre \a parent is a fully composed style (thus has no inherited properties)
  */
 css_error css_computed_style_compose(
-		const css_computed_style *restrict parent,
-		const css_computed_style *restrict child,
+		const css_computed_style *parent,
+		const css_computed_style *child,
 		css_error (*compute_font_size)(void *pw,
 			const css_hint *parent, css_hint *size),
 		void *pw,
-		css_computed_style **restrict result)
+		css_computed_style **result)
 {
 	css_computed_style *composed;
 	css_error error;
